@@ -1,7 +1,8 @@
 #Script Name: ProcessSLC_Scotland
 #Date Created: 16/09/2020
 #Date Modified: 16/09/2020
-#Licence: JNCC
+#Author: JNCC
+#Licence: MIT Licence
 #Abstract: Script written for the Copernicus User Uptake project on illegal waste
 
 
