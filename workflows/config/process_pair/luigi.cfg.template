@@ -1,0 +1,19 @@
+[Core]
+
+[GetConfiguration]
+paths = {"input":"/input",
+            "state":"/state",
+            "static":"/static",
+            "working":"/working",
+            "output":"/output",
+            "scripts": "/app/toolchain/scripts",
+            "toolchain": "/app/toolchain",
+            "executable": "/app/snap/bin/gpt",
+            "toolchainXML": "SLCCoh_Scot_CommandLine.xml"
+            }
+
+[ProcessSLCPair]
+
+[ConvertToTif]
+sourceSRS = EPSG:4326
+
