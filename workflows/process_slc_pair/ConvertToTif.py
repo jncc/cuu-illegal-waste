@@ -21,7 +21,7 @@ class ConvertToTif(luigi.Task):
 
     log.info('Creating output GeoTIFF at {0}'.format(outputFullPath))
 
-    cmd = 'gdalwarp -s_srs {0} -t_srs {1} -dstnodata 0 -r near -of GTiff -tr 10.0 10.0 -co "COMPRESS=DEFLATE" {2} {3}'.format(sourceSRS, outputSRS, input, outputFullPath)
+    cmd = 'gdalwarp -s_srs EPSG:{0} -t_srs EPSG:{1} -dstnodata 0 -r near -of GTiff -tr 10.0 10.0 -co "COMPRESS=DEFLATE" {2} {3}'.format(sourceSRS, outputSRS, input, outputFullPath)
     log.info('Running {0}'.format(cmd))
 
     return subprocess.run(cmd)
