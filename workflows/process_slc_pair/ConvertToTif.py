@@ -4,7 +4,7 @@ import luigi
 import os
 import subprocess
 
-from importlib_metadata import requires
+from luigi.util import requires
 from process_slc_pair.Common import getLocalStateTarget
 from process_slc_pair.ProcessSLCPair import ProcessSLCPair
 
@@ -21,29 +21,39 @@ class ConvertToTif(luigi.Task):
 
     log.info('Creating output GeoTIFF at {0}'.format(outputFullPath))
 
-    return subprocess.run('gdalwarp -s_srs {0} -t_srs {1} -dstnodata 0 -r near -of GTiff -tr 10.0 10.0 -co "COMPRESS=DEFLATE" {2} {3}'.format(sourceSRS, outputSRS, input, outputFullPath))
+    cmd = 'gdalwarp -s_srs {0} -t_srs {1} -dstnodata 0 -r near -of GTiff -tr 10.0 10.0 -co "COMPRESS=DEFLATE" {2} {3}'.format(sourceSRS, outputSRS, input, outputFullPath)
+    log.info('Running {0}'.format(cmd))
 
-  def getInputFile(self, processOutputFolder):
-    dataFolder = [dataFolder for dataFolder in os.listdir(processOutputFolder) if dataFolder.endswith('.data')]
+    return subprocess.run(cmd)
 
-    if (len(dataFolder) == 1):
-      dataFolder = dataFolder[0]
+  def getInputFile(self, outputFolderWithPattern):
+    dataFolder = '{0}.data'.format(outputFolderWithPattern)
+
+    if not (os.path.isdir(dataFolder)):
+      raise Exception('Expected output folder {0} does not exist'.format(dataFolder))
+    
+    log.info('Using data folder {0}'.format(dataFolder))
+    
+    inputFiles = [file for file in os.listdir(dataFolder) if file.endswith('.img')]
+    inputFile = ''
+
+    if len(inputFiles) == 1:
+      inputFile = inputFiles[0]
     else:
-      raise Exception('Found more than one data folder candidate in output folder "{0}", found {1}'.format(processOutputFolder, dataFolder))
+      if len(inputFiles) == 0:
+        raise Exception('Could not find a valid .img file in {0}'.format(dataFolder))
+      raise Exception('Found more than one candidate data file in {0}, found {1}'.format(dataFolder, inputFiles))
 
-    inputFile = os.path.join(dataFolder, '{0}.img'.format(os.basename(dataFolder)))
+    log.info('Using input file {0}'.format(inputFile))
 
-    if os.path.isfile(inputFile):
-      return inputFile
-    else:
-      raise Exception('Output raster file does not exist: {0}'.format(inputFile))
+    return inputFile
 
   def run(self):
     processSLCPairOutput = {}
     with self.input().open('r') as processOutput:
         processSLCPairOutput = json.load(processOutput)
 
-    retcode = self.convert(self.getInputFile(processSLCPairOutput['outputFolderPath']), processSLCPairOutput['outputFolder'], self.sourceSRS, self.outputSRS)
+    retcode = self.convert(self.getInputFile(processSLCPairOutput['outputFolderPathWithPattern']), processSLCPairOutput['outputFolderPath'], self.sourceSRS, self.outputSRS)
 
     if retcode != 0:
         raise "Return code from snap process not 0, code was: {0}".format(

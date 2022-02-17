@@ -5,8 +5,8 @@ import logging
 import os
 import subprocess
 
-from importlib_metadata import requires
-from process_slc_pair.Common import getLocalStateTarget, getOutputFolderPath
+from luigi.util import requires
+from process_slc_pair.Common import getLocalStateTarget
 from process_slc_pair.GetConfiguration import GetConfiguration
 
 log = logging.getLogger('luigi-interface')
@@ -29,12 +29,13 @@ class ProcessSLCPair(luigi.Task):
         with self.input().open('r') as getConfiguration:
             config = json.load(getConfiguration)
 
-        outputFolderPath = getOutputFolderPath(config['outputBaseFolder'], config['outputFolder'])
-        log.info('Writing outputs to {0}'.format(outputFolderPath))
+        outputFolderPath = os.path.join(config['outputBaseFolder'], config['outputFolder'])
+        outputFolderPathWithPattern = os.path.join(outputFolderPath, config['outputFilePattern'])
+        log.info('Writing outputs as pattern {0}'.format(outputFolderPathWithPattern))
 
-        retcode = self.runProcess(config['executablePath'], config['processXMLPath'],
+        retcode = self.runProcess(config['executablePath'], config['configXMLPath'],
                                   config['firstInputPath'], config['secondInputPath'],
-                                  outputFolderPath)
+                                  outputFolderPathWithPattern)
 
         if retcode != 0:
             raise "Return code from snap process not 0, code was: {0}".format(
@@ -47,9 +48,10 @@ class ProcessSLCPair(luigi.Task):
             'firstInputPath': config['firstInputPath'],
             'secondInputPath': config['secondInputPath'],
             'outputBaseFolder': config['outputBaseFolder'],
-            'outputFolder': config['outputFolder'],
-            'outputFolderPath': outputFolderPath
+            'outputFilePattern': config['outputFilePattern'],
+            'outputFolderPath': outputFolderPath,
+            'outputFolderPathWithPattern': outputFolderPathWithPattern
           }))
 
     def output(self):
-      return getLocalStateTarget(self.paths['state'], 'ConvertToTif.json')
+      return getLocalStateTarget(self.paths['state'], 'ProcessSLCPair.json')

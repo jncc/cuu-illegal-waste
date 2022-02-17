@@ -3,7 +3,7 @@ import luigi
 import json
 import os
 
-from process_slc_pair.Common import getLocalStateTarget, getOutputFolderFromInputs
+from process_slc_pair.Common import getLocalStateTarget, getOutputPatternFromInputs
 
 log = logging.getLogger('luigi-interface')
 
@@ -21,7 +21,8 @@ class GetConfiguration(luigi.Task):
         'firstInputPath': self.firstInput,
         'secondInputPath': self.secondInput,
         'outputBaseFolder': self.outputBaseFolder,
-        'outputFolder': getOutputFolderFromInputs(self.firstInput, self.secondInput)
+        'outputFolder': getOutputPatternFromInputs(self.firstInput, self.secondInput),
+        'outputFilePattern': getOutputPatternFromInputs(self.firstInput, self.secondInput)
       }))
   
   def output(self):

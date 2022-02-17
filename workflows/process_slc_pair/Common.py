@@ -8,7 +8,7 @@ def getLocalStateTarget(targetPath, fileName):
   targetKey = os.path.join(targetPath, fileName)
   return getLocalTarget(targetKey)
 
-def getOutputFolderFromInputs(startFile, endFile):
+def getOutputPatternFromInputs(startFile, endFile):
     startFilename = os.path.basename(startFile)
     endFilename = os.path.basename(endFile)
     
@@ -17,7 +17,3 @@ def getOutputFolderFromInputs(startFile, endFile):
     endDate = endFilename[17:25]
 
     return '{0}_coh_vv_{1}_{2}'.format(satellite, startDate, endDate)
-
-def getOutputFolderPath(outputBase, outputFolder):
-    outputFolder = os.path.join(outputBase, outputFolder)
-    return outputFolder
