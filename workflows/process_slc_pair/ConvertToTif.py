@@ -4,9 +4,9 @@ import luigi
 import os
 import subprocess
 
-from common import getLocalStateTarget
 from importlib_metadata import requires
-from process_pair.process import ProcessSLCPair
+from process_slc_pair.Common import getLocalStateTarget
+from process_slc_pair.ProcessSLCPair import ProcessSLCPair
 
 log = logging.getLogger('luigi-interface')
 
@@ -43,7 +43,7 @@ class ConvertToTif(luigi.Task):
     with self.input().open('r') as processOutput:
         processSLCPairOutput = json.load(processOutput)
 
-    retcode = self.convert(self.getInputFile(processSLCPairOutput['outputFolder']), processSLCPairOutput['outputFolder'], self.sourceSRS, self.outputSRS)
+    retcode = self.convert(self.getInputFile(processSLCPairOutput['outputFolderPath']), processSLCPairOutput['outputFolder'], self.sourceSRS, self.outputSRS)
 
     if retcode != 0:
         raise "Return code from snap process not 0, code was: {0}".format(

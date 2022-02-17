@@ -5,9 +5,9 @@ import logging
 import os
 import subprocess
 
-from common import getLocalStateTarget, getOutputFolderPath
 from importlib_metadata import requires
-from process_pair.get_configuration import GetConfiguration
+from process_slc_pair.Common import getLocalStateTarget, getOutputFolderPath
+from process_slc_pair.GetConfiguration import GetConfiguration
 
 log = logging.getLogger('luigi-interface')
 
@@ -47,7 +47,8 @@ class ProcessSLCPair(luigi.Task):
             'firstInputPath': config['firstInputPath'],
             'secondInputPath': config['secondInputPath'],
             'outputBaseFolder': config['outputBaseFolder'],
-            'outputFolder': config['outputFolder']
+            'outputFolder': config['outputFolder'],
+            'outputFolderPath': outputFolderPath
           }))
 
     def output(self):

@@ -29,13 +29,13 @@ RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.7 1 
 COPY  SLCCoh_Scot_CommandLine.xml /app/toolchain/SLCCoh_Scot_CommandLine.xml
 
 # Copy workflow requirements
-COPY process_slc_pair/requirements.txt /app/workflows/
+COPY workflows/requirements.txt /app/workflows/
 
 # Remove static gpt memory configuration
 #RUN rm /app/snap/bin/gpt.vmoptions
 
 # Build virtual env
-COPY process_slc_pair/install-venv.sh /app/workflows
+COPY workflows/install-venv.sh /app/workflows
 RUN chmod +x /app/workflows/install-venv.sh \
     && /app/workflows/install-venv.sh \
     && rm -f /app/workflows/install-venv.sh
@@ -51,18 +51,18 @@ RUN mkdir /input/ \
 #COPY app/test-luigi.sh ./
 
 # Initialise startup script
-COPY process_slc_pair/exec.sh /app/exec.sh
+COPY workflows/exec.sh /app/exec.sh
 RUN chmod +rx /app/exec.sh
-COPY process_slc_pair/CopyState.py ./
+COPY workflows/CopyState.py ./
 
 # Copy the workflow
-COPY process_slc_pair/workflow ./workflows
+COPY workflows/process_slc_pair ./workflows
 
 # Copy workflow config
-COPY process_slc_pair/config/luigi.cfg /app/workflows
+COPY workflows/config/process_slc_pair/luigi.cfg /app/workflows
 RUN chmod +r ./workflows/luigi.cfg
 
 # Copy container readme
-COPY process_slc_pair/README.md ./
+COPY workflows/README.md ./
 
 ENTRYPOINT ["/app/exec.sh"]
