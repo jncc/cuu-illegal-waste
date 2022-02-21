@@ -1,0 +1,8 @@
+docutils==0.18.1
+lockfile==0.12.2
+luigi==3.0.3
+python-daemon==2.3.0
+python-dateutil==2.8.2
+six==1.16.0
+tenacity==6.3.1
+tornado==6.1

@@ -1,0 +1,5 @@
+[SetupWorkDirs]
+inputLocation=/basket
+stateLocation=/state
+workingLocation=/working
+outputSRS=27700
