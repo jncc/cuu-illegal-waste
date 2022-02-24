@@ -27,6 +27,7 @@ class SetupSubBaskets(luigi.Task):
         movedPairs = []
         for pair in productPairs:
             subBasketDir = os.path.join(self.basketLocation, pair['pairName'])
+            log.info(f'Setting up sub basket {subBasketDir}')
 
             movedPair = {
                 'pairName': pair['pairName'],
@@ -38,7 +39,7 @@ class SetupSubBaskets(luigi.Task):
             for product in pair['products']:
                 srcPath = os.path.join(self.basketLocation, product)
                 destPath = os.path.join(subBasketDir, product)
-                shutil.copy(srcPath, destPath)
+                shutil.copy(srcPath, destPath, follow_symlinks=False)
 
                 movedPair['products'].append(destPath)
 
