@@ -1,5 +1,7 @@
-[SetupWorkDirs]
+[SubmitJobs]
 inputLocation=/basket
 stateLocation=/state
 workingLocation=/working
-outputSRS=27700
+outputLocation=/output
+staticLocation=/static
+containerPath=/container.simg

@@ -2,15 +2,14 @@ import luigi
 import os
 import logging
 import json
-import re
 
 from luigi.util import requires
-from orchestration.GetInputs import GetInputs
+from orchestration.GetProducts import GetProducts
 
 log = logging.getLogger('luigi-interface')
 
-@requires(GetInputs)
-class PairProducts(luigi.Task):
+@requires(GetProducts)
+class GetProductPairs(luigi.Task):
     stateLocation = luigi.Parameter()
 
     def run(self):
@@ -30,12 +29,11 @@ class PairProducts(luigi.Task):
             firstProduct = products[i]
             secondProduct = products[i+1]
 
-            pattern = 'S1.*_([0-9]{8}T[0-9]{6})_[0-9]{8}T[0-9]{6}_.*\.zip'
+            satellite = firstProduct[0:3]
+            firstDate = firstProduct[17:32]
+            secondDate = secondProduct[17:32]
 
-            firstDate = re.match(pattern, firstProduct).group(1)
-            secondDate = re.match(pattern, secondProduct).group(1)
-
-            name = f'{firstDate}_{secondDate}'
+            name = f'{satellite}_{firstDate}_{secondDate}'
 
             productPairs.append({
                 'pairName': name,
@@ -46,4 +44,4 @@ class PairProducts(luigi.Task):
             outFile.write(json.dumps(productPairs, indent=4, sort_keys=True))
 
     def output(self):
-        return luigi.LocalTarget(os.path.join(self.stateLocation, 'PairProducts.json'))
+        return luigi.LocalTarget(os.path.join(self.stateLocation, 'GetProductPairs.json'))
