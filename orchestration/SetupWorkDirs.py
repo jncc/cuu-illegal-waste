@@ -16,6 +16,7 @@ class SetupWorkDirs(luigi.Task):
     outputLocation = luigi.Parameter()
     staticLocation = luigi.Parameter()
     containerPath = luigi.Parameter()
+    templateFile = luigi.Parameter()
 
     def run(self):
         pairBaskets = []
@@ -39,7 +40,7 @@ class SetupWorkDirs(luigi.Task):
             if not os.path.exists(workingDir):
                 os.mkdir(workingDir)
 
-            with open(os.path.join('orchestration/templates/process_illegal_waste_job_template.sbatch'), 'r') as templateFile:
+            with open(self.templateFile, 'r') as templateFile:
                 jobTemplate = Template(templateFile.read())
             
             params = {
