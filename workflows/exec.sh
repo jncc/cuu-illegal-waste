@@ -2,5 +2,5 @@
 umask 002
 source /app/cuu-illegal-waste-venv/bin/activate
 cd /app/workflows
-PYTHONPATH='.' luigi --module process_slc_pair "$@" --local-scheduler
+LUIGI_CONFIG_PATH='/app/workflows/luigi.cfg' PYTHONPATH='.' luigi --module process_slc_pair "$@" --local-scheduler
 python /app/CopyState.py
