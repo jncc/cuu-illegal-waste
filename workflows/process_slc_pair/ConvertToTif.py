@@ -15,7 +15,7 @@ class ConvertToTif(luigi.Task):
   sourceSRS = luigi.Parameter()
   outputSRS = luigi.Parameter()
 
-  def convert(self, input, outputFolder, sourceSRS, outputSRS):
+  def convert(self, input, outputFolder, sourceSRS, outputSRS, runAsShell=True):
     outputFilename = os.path.basename(input).replace('.img', '.tif')
     outputFullPath = os.path.join(outputFolder, outputFilename)
 
@@ -24,7 +24,7 @@ class ConvertToTif(luigi.Task):
     cmd = 'gdalwarp -s_srs EPSG:{0} -t_srs EPSG:{1} -dstnodata 0 -r near -of GTiff -tr 10.0 10.0 -co "COMPRESS=DEFLATE" {2} {3}'.format(sourceSRS, outputSRS, input, outputFullPath)
     log.info('Running {0}'.format(cmd))
 
-    return subprocess.run(cmd)
+    return subprocess.run(cmd, shell=runAsShell)
 
   def getInputFile(self, outputFolderWithPattern):
     dataFolder = '{0}.data'.format(outputFolderWithPattern)

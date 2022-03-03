@@ -22,7 +22,7 @@ class ProcessSLCPair(luigi.Task):
         cmd = '{0} {1} -Pinput1={2} -Pinput2={3} -Poutput={4}'.format(
                 executable, processXML, firstInput, secondInput, outputDir)
         log.info('Running command: {0}'.format(cmd))
-        return subprocess.run(cmd)
+        return subprocess.run(cmd, shell=runAsShell)
 
     def run(self):
         config = {}

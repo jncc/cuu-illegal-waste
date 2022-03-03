@@ -13,6 +13,7 @@ class GetConfiguration(luigi.Task):
   
   def run(self):
     [firstInput, secondInput] = self.getInputFilePairs(self.inputFolder)
+    log.info('Processing S1 file pair [{0}, {1}]'.format(firstInput, secondInput))
 
     with self.output().open('w') as outFile:
       outFile.write(json.dumps({
@@ -22,8 +23,8 @@ class GetConfiguration(luigi.Task):
         'firstInputPath': firstInput,
         'secondInputPath': secondInput,
         'outputBaseFolder': self.paths['output'],
-        'outputFolder': getOutputPatternFromInputs(self.firstInput, self.secondInput),
-        'outputFilePattern': getOutputPatternFromInputs(self.firstInput, self.secondInput)
+        'outputFolder': getOutputPatternFromInputs(firstInput, secondInput),
+        'outputFilePattern': getOutputPatternFromInputs(firstInput, secondInput)
       }))
   
   def getInputFilePairs(self, inputFolder):
@@ -31,8 +32,10 @@ class GetConfiguration(luigi.Task):
     firstDate = inputFolder[4:19]
     secondDate = inputFolder[20:]
 
-    firstInput = [input for input in os.listdir(inputFolder) if firstDate in input]
-    secondInput = [input for input in os.listdir(inputFolder) if secondDate in input]
+    print(inputFolderPath)
+
+    firstInput = [input for input in os.listdir(inputFolderPath) if firstDate in input]
+    secondInput = [input for input in os.listdir(inputFolderPath) if secondDate in input]
 
     if not (len(firstInput) == 1):
       raise Exception('Found more than one candidate for the first input file "%s"').format(firstInput)

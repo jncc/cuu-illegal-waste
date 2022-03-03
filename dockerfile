@@ -56,7 +56,7 @@ RUN chmod +rx /app/exec.sh
 COPY workflows/CopyState.py ./
 
 # Copy the workflow
-COPY workflows/process_slc_pair ./workflows
+COPY workflows/process_slc_pair ./workflows/process_slc_pair
 
 # Copy workflow config
 COPY workflows/config/process_slc_pair/luigi.cfg /app/workflows

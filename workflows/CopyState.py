@@ -1,3 +1,4 @@
+from datetime import datetime
 import logging
 import os
 import sys
@@ -26,11 +27,11 @@ configuration = {}
 with open(configFile, 'r') as getConfiguration:
     configuration = json.load(getConfiguration)
 
-if configuration["noCopyState"]:
+if "noCopyState" in configuration and configuration["noCopyState"]:
     log.warning("noCopySate flag set")
     sys.exit()
     
-targetStatePath = os.path.join("/output", "state", configuration["outputFolder"])
+targetStatePath = os.path.join("/output", "state", configuration["inputFolder"], datetime.now().strftime("%Y%m%d_%H%M%S"))
 
 if os.path.exists(targetStatePath):
     log.info("Removing state path {} from output folder".format(targetStatePath))
