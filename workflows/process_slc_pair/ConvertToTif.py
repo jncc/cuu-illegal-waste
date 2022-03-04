@@ -15,9 +15,8 @@ class ConvertToTif(luigi.Task):
   sourceSRS = luigi.Parameter()
   outputSRS = luigi.Parameter()
 
-  def convert(self, input, outputFolder, sourceSRS, outputSRS, runAsShell=True):
-    outputFilename = os.path.basename(input).replace('.img', '.tif')
-    outputFullPath = os.path.join(outputFolder, outputFilename)
+  def convert(self, input, outputFolder, outputFilePattern, sourceSRS, outputSRS, runAsShell=True):
+    outputFullPath = os.path.join(outputFolder, '{0}.tif'.format(outputFilePattern))
 
     log.info('Creating output GeoTIFF at {0}'.format(outputFullPath))
 
@@ -46,18 +45,18 @@ class ConvertToTif(luigi.Task):
 
     log.info('Using input file {0}'.format(inputFile))
 
-    return inputFile
+    return os.path.join(dataFolder, inputFile)
 
   def run(self):
     processSLCPairOutput = {}
     with self.input().open('r') as processOutput:
         processSLCPairOutput = json.load(processOutput)
 
-    retcode = self.convert(self.getInputFile(processSLCPairOutput['outputFolderPathWithPattern']), processSLCPairOutput['outputFolderPath'], self.sourceSRS, self.outputSRS)
+    proc = self.convert(self.getInputFile(processSLCPairOutput['outputFolderPathWithPattern']), processSLCPairOutput['outputFolderPath'], processSLCPairOutput['outputFilePattern'], self.sourceSRS, self.outputSRS)
 
-    if retcode != 0:
-        raise "Return code from snap process not 0, code was: {0}".format(
-            retcode)
+    if proc.returncode != 0:
+        raise Exception("Return code from gdalwarp process not 0, code was: {0}".format(
+            proc.returncode))
 
     with self.output().open('w') as output:
       output.write(json.dumps({

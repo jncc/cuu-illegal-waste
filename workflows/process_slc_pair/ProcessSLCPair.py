@@ -22,7 +22,7 @@ class ProcessSLCPair(luigi.Task):
         cmd = '{0} {1} -Pinput1={2} -Pinput2={3} -Poutput={4}'.format(
                 executable, processXML, firstInput, secondInput, outputDir)
         log.info('Running command: {0}'.format(cmd))
-        return subprocess.run(cmd, shell=runAsShell)
+        return subprocess.run(cmd, capture_output=True, shell=runAsShell)
 
     def run(self):
         config = {}
@@ -33,13 +33,15 @@ class ProcessSLCPair(luigi.Task):
         outputFolderPathWithPattern = os.path.join(outputFolderPath, config['outputFilePattern'])
         log.info('Writing outputs as pattern {0}'.format(outputFolderPathWithPattern))
 
-        retcode = self.runProcess(config['executablePath'], config['configXMLPath'],
+        proc = self.runProcess(config['executablePath'], config['configXMLPath'],
                                   config['firstInputPath'], config['secondInputPath'],
                                   outputFolderPathWithPattern)
 
-        if retcode != 0:
-            raise "Return code from snap process not 0, code was: {0}".format(
-                retcode)
+        if proc.returncode != 0:
+            log.error('STDOUT: {0}'.format(proc.stdout))
+            log.error('STDERR: {0}'.format(proc.stderr))
+            raise Exception("Return code from snap process not 0, code was: {0}".format(
+                proc.returncode))
 
         with self.output().open('w') as output:
           output.write(json.dumps({
