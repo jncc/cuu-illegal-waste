@@ -2,11 +2,11 @@ import luigi
 import os
 import logging
 import json
-import shutil
 
 from luigi.util import requires
 from orchestration.GetProducts import GetProducts
 from orchestration.GetProductPairs import GetProductPairs
+from pathlib import Path
 
 log = logging.getLogger('luigi-interface')
 
@@ -39,15 +39,18 @@ class SetupSubBaskets(luigi.Task):
             for product in pair['products']:
                 srcPath = os.path.join(self.basketLocation, product)
                 destPath = os.path.join(subBasketDir, product)
-                shutil.copy(srcPath, destPath, follow_symlinks=False)
+                # Creates a symlink to the original file, resolves the symlink if 
+                # it is one so not chaining so we can mount the correct data 
+                # directories more easily
+                Path(destPath).symlink_to(Path(srcPath).resolve())
 
                 movedPair['products'].append(destPath)
 
             movedPairs.append(movedPair)
 
         # cleanup products outside of sub baskets
-        for file in products['files']:
-            os.remove(file)
+        # for file in products['files']:
+        #     os.remove(file)
 
         with self.output().open('w') as outFile:
             outFile.write(json.dumps(movedPairs, indent=4, sort_keys=True))

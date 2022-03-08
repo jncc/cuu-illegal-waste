@@ -1,3 +1,4 @@
+from typing import List
 import luigi
 import os
 import logging
@@ -6,6 +7,7 @@ import json
 from string import Template
 from luigi.util import requires
 from orchestration.GetAllSubBaskets import GetAllSubBaskets
+from pathlib import Path
 
 log = logging.getLogger('luigi-interface')
 
@@ -17,6 +19,32 @@ class SetupWorkDirs(luigi.Task):
     staticLocation = luigi.Parameter()
     containerPath = luigi.Parameter()
     templateFile = luigi.Parameter()
+    outputSRS = luigi.Parameter()
+
+    def resolveExtraBinds(self, extraBinds: List[str], potentialSymlink: str):
+        if Path(potentialSymlink).is_symlink():
+            extraBinds.append(str(Path(potentialSymlink).resolve().parent))
+        return extraBinds
+    
+    def getExtraBindsFromBasket(self, basket):
+        extraBinds = []
+        for file in basket:
+            extraBinds = self.resolveExtraBinds(extraBinds, file)
+        return list(set(extraBinds))
+
+    def getFilteredExtraBindings(self, input, state, static, working, output, basketFiles: List[str]):
+        extraBinds = self.getExtraBindsFromBasket(basketFiles)
+
+        for binding in [input, state, static, working, output]:
+            if binding in extraBinds:
+                extraBinds.remove(binding)
+
+        bindings = ''
+
+        for bind in extraBinds:
+            bindings = '{0} --bind {1}:{1}'.format(bindings, bind)        
+        
+        return bindings
 
     def run(self):
         pairBaskets = []
@@ -42,18 +70,19 @@ class SetupWorkDirs(luigi.Task):
 
             with open(self.templateFile, 'r') as templateFile:
                 jobTemplate = Template(templateFile.read())
-            
+
             params = {
-                'input': basket['basketPath'],
+                'input': str(Path(basket['basketPath']).parent),
                 'state': stateDir,
                 'static': self.staticLocation,
                 'working': workingDir,
                 'output': self.outputLocation,
                 'containerPath': self.containerPath,
-                'firstInput': basket['files'][0],
-                'secondInput': basket['files'][1],
-                'outputBaseFolder': self.outputLocation
+                'inputFolder': pairName,
+                'outputSRS': self.outputSRS
             }
+
+            params['extraBinds'] = self.getFilteredExtraBindings(params['input'], params['state'], params['static'], params['working'], params['output'], basket['files'])
 
             sbatchContents = jobTemplate.substitute(params)
             sbatchFile = os.path.join(baseWorkDir, 'process_illegal_waste.sbatch')
