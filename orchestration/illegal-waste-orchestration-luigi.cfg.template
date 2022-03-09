@@ -1,5 +1,6 @@
 [SubmitJobs]
-inputLocation=/basket
+inputLocation=/input
+basketLocation=/basket
 stateLocation=/state
 workingLocation=/working
 outputLocation=/output

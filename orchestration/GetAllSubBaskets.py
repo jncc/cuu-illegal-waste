@@ -12,6 +12,7 @@ log = logging.getLogger('luigi-interface')
 
 @requires(SetupSubBaskets)
 class GetAllSubBaskets(luigi.Task):
+    inputLocation = luigi.Parameter()
     basketLocation = luigi.Parameter()
     stateLocation = luigi.Parameter()
     workingLocation = luigi.Parameter()
@@ -22,7 +23,7 @@ class GetAllSubBaskets(luigi.Task):
         subBaskets = []
         for dir in glob.glob(os.path.join(self.basketLocation, 'S1*_*_*/')):
             task = GetProducts(
-                basketLocation = dir,
+                inputLocation = dir,
                 stateLocation = self.stateLocation
             )
 
