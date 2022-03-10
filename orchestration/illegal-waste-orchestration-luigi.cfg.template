@@ -1,0 +1,9 @@
+[SubmitJobs]
+inputLocation=/input
+basketLocation=/basket
+stateLocation=/state
+workingLocation=/working
+outputLocation=/output
+staticLocation=/static
+containerPath=/container.simg
+templateFile=orchestration/templates/process_illegal_waste_job_template.sbatch
