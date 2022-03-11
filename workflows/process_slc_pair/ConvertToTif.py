@@ -59,9 +59,7 @@ class ConvertToTif(luigi.Task):
             proc.returncode))
 
     with self.output().open('w') as output:
-      output.write(json.dumps({
-
-      }))    
+      output.write(json.dumps(processSLCPairOutput))
   
   def output(self):
     return getLocalStateTarget(self.paths['state'], 'ConvertToTif.json')

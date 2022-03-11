@@ -45,6 +45,7 @@ class ProcessSLCPair(luigi.Task):
           output.write(json.dumps({
             'executablePath': config['executablePath'],
             'configXMLPath': config['configXMLPath'],
+            'inputFolder': config['inputFolder'],
             'firstInputPath': config['firstInputPath'],
             'secondInputPath': config['secondInputPath'],
             'outputBaseFolder': config['outputBaseFolder'],
