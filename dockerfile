@@ -59,7 +59,7 @@ COPY workflows/CopyState.py ./
 COPY workflows/process_slc_pair ./workflows/process_slc_pair
 
 # Copy workflow config
-COPY workflows/config/process_slc_pair/luigi.cfg /app/workflows
+COPY workflows/config/process_slc_pair/luigi.cfg.template /app/workflows/luigi.cfg
 RUN chmod +r ./workflows/luigi.cfg
 
 # Copy container readme
