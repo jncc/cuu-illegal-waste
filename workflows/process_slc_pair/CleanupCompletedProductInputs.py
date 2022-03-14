@@ -12,14 +12,14 @@ log = logging.getLogger('luigi-interface')
 
 @requires(ConvertToTif)
 class CleanupCompletedProductInputs(luigi.Task):
-  input = luigi.Parameter()
+  paths = luigi.DictParameter()
 
   def run(self):
     convertToTifOutput = {}
     with self.input().open('r') as processOutput:
         convertToTifOutput = json.load(processOutput)
 
-    inputBasketDirectory = os.path.join(self.input, convertToTifOutput['inputFolder'])
+    inputBasketDirectory = os.path.join(self.paths['input'], convertToTifOutput['inputFolder'])
     log.info('Removing input basket directory "{0}"'.format(inputBasketDirectory))
     shutil.rmtree(inputBasketDirectory)
 
