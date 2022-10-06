@@ -21,9 +21,9 @@ class SetupSubBaskets(luigi.Task):
         with self.input()[0].open('r') as productPairsInfo:
             productPairs = json.load(productPairsInfo)
 
-        products = []
-        with self.input()[1].open('r') as productsInfo:
-            products = json.load(productsInfo)
+        # products = []
+        # with self.input()[1].open('r') as productsInfo:
+        #     products = json.load(productsInfo)
 
         foundPairs = []
         for pair in productPairs:
