@@ -15,7 +15,7 @@ source .venv/bin/activate
 Create a `illegal-waste-orchestration-luigi.cfg` file using the template and run it like so:
 
 ```
-LUIGI_CONFIG_PATH=orchestration/illegal-waste-orchestration-luigi.cfg PYTHONPATH='.' luigi --module orchestration SubmitJobs --testProcessing --local-scheduler
+LUIGI_CONFIG_PATH=orchestration/illegal-waste-orchestration-luigi.cfg PYTHONPATH='.' luigi --module orchestration SubmitJobs --outputSRS=27700 --testProcessing --local-scheduler
 ```
 
 Use the `--testProcessing` flag to test locally or it will try and actually submit the jobs.

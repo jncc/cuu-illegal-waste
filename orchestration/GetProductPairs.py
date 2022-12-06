@@ -12,6 +12,9 @@ log = logging.getLogger('luigi-interface')
 class GetProductPairs(luigi.Task):
     stateLocation = luigi.Parameter()
 
+    def getDatesFromName(self, productName):
+        return productName[-54:-23] # gets the date part of the name, e.g. 20180728T181506_20180728T181533
+
     def run(self):
         files = []
         with self.input().open('r') as inputFile:
@@ -22,7 +25,7 @@ class GetProductPairs(luigi.Task):
             filename = os.path.basename(file)
             products.append(filename)
 
-        products = sorted(products)
+        products.sort(key=lambda x: self.getDatesFromName(x))
 
         productPairs = []
         for i in range(len(products)-1):
