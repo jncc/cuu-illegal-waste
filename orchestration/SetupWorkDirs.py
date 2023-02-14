@@ -81,7 +81,7 @@ class SetupWorkDirs(luigi.Task):
                 'containerPath': self.containerPath,
                 'inputFolder': pairName,
                 'outputSRS': self.outputSRS,
-                'finalJobTarget': 'CleanupCompletedProductInputs' if self.cleanupBasket else 'CovertToTif'
+                'finalJobTarget': 'CleanupCompletedProductInputs' if self.cleanupBasket else 'ConvertToTif'
             }
 
             params['extraBinds'] = self.getFilteredExtraBindings(params['input'], params['state'], params['static'], params['working'], params['output'], basket['files'])
