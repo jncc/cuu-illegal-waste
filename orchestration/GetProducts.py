@@ -4,6 +4,7 @@ import os
 import logging
 import glob
 import json
+import shutil
 
 log = logging.getLogger('luigi-interface')
 
@@ -14,9 +15,17 @@ class GetProducts(luigi.Task):
     def run(self):
         log.info(self.inputLocation)
 
+        folderPaths = []
+        for file in glob.glob(os.path.join(self.inputLocation, 'S1*_SLC_*.SAFE')):
+            folderPaths.append(file)
+
         filePaths = []
-        for file in glob.glob(os.path.join(self.inputLocation, 'S1*_SLC_*.zip')):
-            filePaths.append(file)
+        for folderPath in folderPaths:
+            zipPath = folderPath.replace("SAFE", "zip")
+            shutil.make_archive(zipPath, 'zip', folderPath)
+            shutil.rmtree(folderPath)
+
+            filePaths.append(zipPath)
 
         output = {
             'files': filePaths
