@@ -15,17 +15,20 @@ class GetProducts(luigi.Task):
     def run(self):
         log.info(self.inputLocation)
 
-        folderPaths = []
-        for file in glob.glob(os.path.join(self.inputLocation, 'S1*_SLC_*.SAFE')):
-            folderPaths.append(file)
+        productPaths = []
+        for path in glob.glob(os.path.join(self.inputLocation, 'S1*_SLC_*.*')):
+            productPaths.append(path)
 
         filePaths = []
-        for folderPath in folderPaths:
-            zipPath = folderPath.replace(".SAFE", "")
-            shutil.make_archive(zipPath, 'zip', folderPath)
-            shutil.rmtree(folderPath)
+        for productPath in productPaths:
+            if productPath.endswith(".SAFE"):
+                zipPath = productPath.replace(".SAFE", "")
+                shutil.make_archive(zipPath, 'zip', productPath)
+                shutil.rmtree(productPath)
 
-            filePaths.append(zipPath)
+                filePaths.append(zipPath)
+            else:
+                filePaths.append(productPath)
 
         output = {
             'files': filePaths
