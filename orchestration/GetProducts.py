@@ -21,7 +21,7 @@ class GetProducts(luigi.Task):
 
         filePaths = []
         for folderPath in folderPaths:
-            zipPath = folderPath.replace("SAFE", "zip")
+            zipPath = folderPath.replace(".SAFE", "")
             shutil.make_archive(zipPath, 'zip', folderPath)
             shutil.rmtree(folderPath)
 
