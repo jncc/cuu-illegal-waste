@@ -22,8 +22,8 @@ class GetProducts(luigi.Task):
         filePaths = []
         for productPath in productPaths:
             if productPath.endswith(".SAFE"):
-                zipPath = productPath.replace(".SAFE", "")
-                shutil.make_archive(zipPath, 'zip', productPath)
+                zipBasename = productPath.replace(".SAFE", "")
+                zipPath = shutil.make_archive(zipBasename, 'zip', productPath)
                 shutil.rmtree(productPath)
 
                 filePaths.append(zipPath)
