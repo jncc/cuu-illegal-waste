@@ -30,15 +30,15 @@ class GetAllSubBaskets(luigi.Task):
             yield task
 
             with task.output().open('r') as taskOutput:
-                files = json.load(taskOutput)['files']
+                products = json.load(taskOutput)['products']
 
-                count = len(files)
+                count = len(products)
                 if count < 2:
                     raise Exception(f'Need at least two products in the basket, found {count}')
 
                 subBaskets.append({
                     'basketPath': dir,
-                    'files': files
+                    'products': products
                 })
 
         output = {

@@ -16,22 +16,11 @@ class GetProducts(luigi.Task):
         log.info(self.inputLocation)
 
         productPaths = []
-        for path in glob.glob(os.path.join(self.inputLocation, 'S1*_SLC_*.*')):
+        for path in glob.glob(os.path.join(self.inputLocation, 'S1*_SLC_*.SAFE')):
             productPaths.append(path)
 
-        filePaths = []
-        for productPath in productPaths:
-            if productPath.endswith(".SAFE"):
-                zipBasename = productPath.replace(".SAFE", "")
-                zipPath = shutil.make_archive(zipBasename, 'zip', productPath)
-                shutil.rmtree(productPath)
-
-                filePaths.append(zipPath)
-            else:
-                filePaths.append(productPath)
-
         output = {
-            'files': filePaths
+            'products': productPaths
         }
         with self.output().open("w") as outFile:
             outFile.write(json.dumps(output, indent=4, sort_keys=True))

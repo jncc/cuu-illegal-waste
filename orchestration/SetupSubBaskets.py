@@ -49,10 +49,6 @@ class SetupSubBaskets(luigi.Task):
 
             foundPairs.append(foundPair)
 
-        # cleanup products outside of sub baskets
-        # for file in products['files']:
-        #     os.remove(file)
-
         with self.output().open('w') as outFile:
             outFile.write(json.dumps(foundPairs, indent=4, sort_keys=True))
 

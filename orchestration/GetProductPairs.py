@@ -16,21 +16,21 @@ class GetProductPairs(luigi.Task):
         return productName[-54:-23] # gets the date part of the name, e.g. 20180728T181506_20180728T181533
 
     def run(self):
-        files = []
-        with self.input().open('r') as inputFile:
-            files = json.load(inputFile)
-
         products = []
-        for file in files['files']:
-            filename = os.path.basename(file)
-            products.append(filename)
+        with self.input().open('r') as inputFile:
+            products = json.load(inputFile)
 
-        products.sort(key=lambda x: self.getDatesFromName(x))
+        productNames = []
+        for productPath in products['products']:
+            filename = os.path.basename(productPath)
+            productNames.append(filename)
+
+        productNames.sort(key=lambda x: self.getDatesFromName(x))
 
         productPairs = []
-        for i in range(len(products)-1):
-            firstProduct = products[i]
-            secondProduct = products[i+1]
+        for i in range(len(productNames)-1):
+            firstProduct = productNames[i]
+            secondProduct = productNames[i+1]
 
             firstDate = firstProduct[17:32]
             secondDate = secondProduct[17:32]

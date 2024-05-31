@@ -84,7 +84,7 @@ class SetupWorkDirs(luigi.Task):
                 'finalJobTarget': 'CleanupCompletedProductInputs' if self.cleanupBasket else 'ConvertToTif'
             }
 
-            params['extraBinds'] = self.getFilteredExtraBindings(params['input'], params['state'], params['static'], params['working'], params['output'], basket['files'])
+            params['extraBinds'] = self.getFilteredExtraBindings(params['input'], params['state'], params['static'], params['working'], params['output'], basket['products'])
 
             sbatchContents = jobTemplate.substitute(params)
             sbatchFile = os.path.join(baseWorkDir, 'process_illegal_waste.sbatch')
@@ -95,7 +95,7 @@ class SetupWorkDirs(luigi.Task):
             productPairs.append({
                 'pairName': pairName,
                 'basketPath': basket['basketPath'],
-                'products': basket['files'],
+                'products': basket['products'],
                 'sbatchFile': sbatchFile
             })
 
