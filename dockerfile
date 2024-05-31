@@ -12,21 +12,15 @@ RUN apt-get update && apt-get -y install \
     bc 
 
 # Install packages from apt
-RUN add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable \
-    && apt-get update && apt-get -y install \
-    python3.7 \
-    python-setuptools \
+RUN apt-get update && apt-get -y install \
+    python3 \
     python3-pip \
     gdal-bin
-
-# Setup python3
-RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.7 1 \
-    && pip3 install virtualenv
 
 # --------- Place machine build layers before this line ---------
 
 # Install snap toolbox scripts.
-COPY  SLCCoh_Scot_CommandLine.xml /app/toolchain/SLCCoh_Scot_CommandLine.xml
+COPY SLCCoh_Scot_CommandLine.xml /app/toolchain/SLCCoh_Scot_CommandLine.xml
 
 # Copy workflow requirements
 COPY workflows/requirements.txt /app/workflows/
