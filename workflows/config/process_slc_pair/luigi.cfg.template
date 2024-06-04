@@ -6,7 +6,7 @@ paths = {"input":"/input",
             "output":"/output",
             "scripts": "/app/toolchain/scripts",
             "toolchain": "/app/toolchain",
-            "executable": "/app/snap/bin/gpt",
+            "executable": "/usr/local/esa-snap/bin/gpt",
             "toolchainXML": "SLCCoh_Scot_CommandLine.xml"
             }
 sourceSRS = 4326
@@ -19,7 +19,7 @@ paths = {"input":"/input",
             "output":"/output",
             "scripts": "/app/toolchain/scripts",
             "toolchain": "/app/toolchain",
-            "executable": "/app/snap/bin/gpt",
+            "executable": "/usr/local/esa-snap/bin/gpt",
             "toolchainXML": "SLCCoh_Scot_CommandLine.xml"
             }
 sourceSRS = 4326
