@@ -14,7 +14,7 @@ RUN apt-get update && apt-get -y install \
 # Install packages from apt
 RUN apt-get update && apt-get -y install \
     python3 \
-    python3-pip \
+    python3-venv \
     gdal-bin
 
 # --------- Place machine build layers before this line ---------
