@@ -22,10 +22,10 @@ class GetConfiguration(luigi.Task):
         'inputFolder': self.inputFolder,
         'firstInputPath': firstInput,
         'secondInputPath': secondInput,
-        'outputBaseFolder': self.paths['output'],
-        'outputFolder': getOutputPatternFromInputs(firstInput, secondInput),
+        'workingFolder': self.paths['working'],
+        'outputFolder': self.paths['output'],
         'outputFilePattern': getOutputPatternFromInputs(firstInput, secondInput)
-      }))
+      }, indent=4))
   
   def getInputFilePairs(self, inputFolder):
     inputFolderPath = os.path.join(self.paths['input'], inputFolder)

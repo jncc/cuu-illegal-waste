@@ -73,6 +73,7 @@ class SetupWorkDirs(luigi.Task):
                 jobTemplate = Template(templateFile.read())
 
             params = {
+                'jobWorkingDir': baseWorkDir,
                 'input': str(Path(basket['basketPath']).parent),
                 'state': stateDir,
                 'static': self.staticLocation,

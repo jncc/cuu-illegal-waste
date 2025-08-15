@@ -1,4 +1,3 @@
-import glob
 import json
 import luigi
 import logging
@@ -18,9 +17,9 @@ class ProcessSLCPair(luigi.Task):
             raise Exception('{0}: Does not exist'.format(file))
         return True
 
-    def runProcess(self, executable, processXML, firstInput, secondInput, outputDir, runAsShell=True):
+    def runProcess(self, executable, processXML, firstInput, secondInput, workingDir, runAsShell=True):
         cmd = '{0} {1} -Pinput1={2} -Pinput2={3} -Poutput={4}'.format(
-                executable, processXML, firstInput, secondInput, outputDir)
+                executable, processXML, firstInput, secondInput, workingDir)
         log.info('Running command: {0}'.format(cmd))
         return subprocess.run(cmd, shell=runAsShell)
 
@@ -29,13 +28,11 @@ class ProcessSLCPair(luigi.Task):
         with self.input().open('r') as getConfiguration:
             config = json.load(getConfiguration)
 
-        outputFolderPath = os.path.join(config['outputBaseFolder'], config['outputFolder'])
-        outputFolderPathWithPattern = os.path.join(outputFolderPath, config['outputFilePattern'])
-        log.info('Writing outputs as pattern {0}'.format(outputFolderPathWithPattern))
-
+        workingFolder = config['workingFolder']
+        workingFolderWithPattern = os.path.join(config['workingFolder'], config['outputFilePattern'])
         proc = self.runProcess(config['executablePath'], config['configXMLPath'],
                                   config['firstInputPath'], config['secondInputPath'],
-                                  outputFolderPathWithPattern)
+                                  workingFolder)
 
         if proc.returncode != 0:
             raise Exception("Return code from snap process not 0, code was: {0}".format(
@@ -48,11 +45,11 @@ class ProcessSLCPair(luigi.Task):
             'inputFolder': config['inputFolder'],
             'firstInputPath': config['firstInputPath'],
             'secondInputPath': config['secondInputPath'],
-            'outputBaseFolder': config['outputBaseFolder'],
+            'outputFolder': config['outputFolder'],
             'outputFilePattern': config['outputFilePattern'],
-            'outputFolderPath': outputFolderPath,
-            'outputFolderPathWithPattern': outputFolderPathWithPattern
-          }))
+            'workingFolder': config['workingFolder'],
+            'workingFolderWithPattern': workingFolderWithPattern
+          }, indent=4))
 
     def output(self):
       return getLocalStateTarget(self.paths['state'], 'ProcessSLCPair.json')
