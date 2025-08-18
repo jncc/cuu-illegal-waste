@@ -28,11 +28,10 @@ class ProcessSLCPair(luigi.Task):
         with self.input().open('r') as getConfiguration:
             config = json.load(getConfiguration)
 
-        workingFolder = config['workingFolder']
         workingFolderWithPattern = os.path.join(config['workingFolder'], config['outputFilePattern'])
         proc = self.runProcess(config['executablePath'], config['configXMLPath'],
                                   config['firstInputPath'], config['secondInputPath'],
-                                  workingFolder)
+                                  workingFolderWithPattern)
 
         if proc.returncode != 0:
             raise Exception("Return code from snap process not 0, code was: {0}".format(
