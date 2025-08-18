@@ -3,4 +3,4 @@ import process_slc_pair.Common
 import process_slc_pair.ProcessSLCPair
 import process_slc_pair.ConvertToTif
 import process_slc_pair.TransferOutputs
-import process_slc_pair.CleanupCompletedProductInputs
+import process_slc_pair.CleanupCompletedProducts

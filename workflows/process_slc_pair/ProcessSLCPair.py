@@ -38,17 +38,17 @@ class ProcessSLCPair(luigi.Task):
                 proc.returncode))
 
         with self.output().open('w') as output:
-          output.write(json.dumps({
-            'executablePath': config['executablePath'],
-            'configXMLPath': config['configXMLPath'],
-            'inputFolder': config['inputFolder'],
-            'firstInputPath': config['firstInputPath'],
-            'secondInputPath': config['secondInputPath'],
-            'outputFolder': config['outputFolder'],
-            'outputFilePattern': config['outputFilePattern'],
-            'workingFolder': config['workingFolder'],
-            'workingFolderWithPattern': workingFolderWithPattern
-          }, indent=4))
+            output.write(json.dumps({
+                'executablePath': config['executablePath'],
+                'configXMLPath': config['configXMLPath'],
+                'inputFolder': config['inputFolder'],
+                'firstInputPath': config['firstInputPath'],
+                'secondInputPath': config['secondInputPath'],
+                'outputFolder': config['outputFolder'],
+                'outputFilePattern': config['outputFilePattern'],
+                'workingFolder': config['workingFolder'],
+                'workingFolderWithPattern': workingFolderWithPattern
+            }, indent=4))
 
     def output(self):
       return getLocalStateTarget(self.paths['state'], 'ProcessSLCPair.json')
