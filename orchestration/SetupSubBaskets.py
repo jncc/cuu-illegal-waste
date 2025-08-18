@@ -36,7 +36,7 @@ class SetupSubBaskets(luigi.Task):
                 'subBasketDir': subBasketDir
             }
 
-            os.makedirs(subBasketDir)
+            Path(subBasketDir).mkdir(parents=True, exist_ok=True)
             for product in pair['products']:
                 srcPath = os.path.join(self.inputLocation, product)
                 destPath = os.path.join(subBasketDir, product)
