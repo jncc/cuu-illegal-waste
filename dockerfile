@@ -1,4 +1,4 @@
-FROM jncc/snap-base-dev:1.0.12
+FROM jncc/snap-base:1.0.5-SNAP-12.0.0
 
 # Setup app folder
 WORKDIR /app
@@ -7,15 +7,15 @@ WORKDIR /app
 RUN apt-get update && apt-get -y install \ 
     apt-utils \
     build-essential \
-    software-properties-common \
     git \
     bc 
 
 # Install packages from apt
 RUN apt-get update && apt-get -y install \
     python3 \
-    python3-venv \
-    gdal-bin
+    python3-venv
+
+
 
 # --------- Place machine build layers before this line ---------
 
@@ -25,8 +25,8 @@ COPY SLCCoh_Scot_CommandLine.xml /app/toolchain/SLCCoh_Scot_CommandLine.xml
 # Copy workflow requirements
 COPY workflows/requirements.txt /app/workflows/
 
-# Remove static gpt memory configuration
-#RUN rm /app/snap/bin/gpt.vmoptions
+# Set gpt memory configuration
+COPY workflows/config/esa-snap/bin/gpt.vmoptions /usr/local/esa-snap/bin
 
 # Build virtual env
 COPY workflows/install-venv.sh /app/workflows

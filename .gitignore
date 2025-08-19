@@ -2,3 +2,4 @@
 *.cfg
 __pycache__
 .venv
+*.sif
