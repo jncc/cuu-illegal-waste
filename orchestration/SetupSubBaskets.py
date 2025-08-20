@@ -43,7 +43,8 @@ class SetupSubBaskets(luigi.Task):
                 # Creates a symlink to the original file, resolves the symlink if 
                 # it is one so not chaining so we can mount the correct data 
                 # directories more easily
-                Path(destPath).symlink_to(Path(srcPath).resolve())
+                if not Path(destPath).exists():
+                    Path(destPath).symlink_to(Path(srcPath).resolve())
 
                 foundPair['products'].append(destPath)
 
