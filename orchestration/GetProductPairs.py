@@ -35,7 +35,9 @@ class GetProductPairs(luigi.Task):
             firstDate = firstProduct[17:32]
             secondDate = secondProduct[17:32]
 
-            name = f'S1_{firstDate}_{secondDate}'
+            satelliteCode = firstProduct[0:3]
+
+            name = f'{satelliteCode}_{firstDate}_{secondDate}'
 
             productPairs.append({
                 'pairName': name,
