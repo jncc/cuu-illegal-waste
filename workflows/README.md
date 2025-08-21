@@ -51,7 +51,7 @@ LUIGI_CONFIG_PATH=./config/process_slc_pair/luigi.cfg PYTHONPATH='.' luigi --mod
 
 Running this workflow will create a GeoTiff under the `/output` in the pattern `S1[A|B|C]_coh_vv_[StartDate]_[EndDate].tif`.
 
-`/output` is the base directory where final outputs should be written to. The SNAP outputs can also be found in the `/working` directory under folders with pattern `S1[A|B]_coh_vv_[StartDate-YYYYMMDD]_[EndDate-YYYYMMDD]` (i.e. `S1B_coh_vv_20201110_20201122`) if `CleanupCompletedProducts` has not been run.
+`/output` is the base directory where final outputs should be written to. The SNAP outputs can also be found in the `/working` directory under folders with pattern `S1[A|B]_coh_vv_[StartDate-YYYYMMDD]_[EndDate-YYYYMMDD]` (i.e. `S1B_coh_vv_20201110_20201122`) if `CleanupCompletedProducts` has not been run. State files can also be found here which are useful for debugging.
 
     output/
     ├── S1B_coh_vv_20201029_20201110.tif
@@ -68,6 +68,7 @@ Running this workflow will create a GeoTiff under the `/output` in the pattern `
     │   │   │   │   ├── coh_VV_29Oct2020_10Nov2020.img
     │   │   │   ├── S1B_coh_vv_20201029_20201110.dim
     │   │   │   ├── S1B_coh_vv_20201029_20201110.tif
+    │   │   │   ├── S1B_coh_vv_20201029_20201110_tmp1.tif
     │   │   ├── S1B_coh_vv_20201110_20201122
     │   │   │   ├── ...
     │   ├── state
@@ -81,7 +82,7 @@ Running this workflow will create a GeoTiff under the `/output` in the pattern `
     │   ├── state
     |   │   ├── ...
  
-The final output of this workflow is the `.tif` file which is a reprojected form of the `.img` file in the `.data` folder. While the state folder contains the output of the state directory inside the image so it can be viewed for error tracking.
+The final output of this workflow is a Cloud Optimised GeoTiff file which is a reprojected form of the `.img` file in the `.data` folder.
 
 ## Docker container 
 
