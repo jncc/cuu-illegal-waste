@@ -21,10 +21,6 @@ class SetupSubBaskets(luigi.Task):
         with self.input()[0].open('r') as productPairsInfo:
             productPairs = json.load(productPairsInfo)
 
-        # products = []
-        # with self.input()[1].open('r') as productsInfo:
-        #     products = json.load(productsInfo)
-
         foundPairs = []
         for pair in productPairs:
             subBasketDir = os.path.join(self.basketLocation, pair['pairName'])
@@ -36,14 +32,15 @@ class SetupSubBaskets(luigi.Task):
                 'subBasketDir': subBasketDir
             }
 
-            os.makedirs(subBasketDir)
+            Path(subBasketDir).mkdir(parents=True, exist_ok=True)
             for product in pair['products']:
                 srcPath = os.path.join(self.inputLocation, product)
                 destPath = os.path.join(subBasketDir, product)
                 # Creates a symlink to the original file, resolves the symlink if 
                 # it is one so not chaining so we can mount the correct data 
                 # directories more easily
-                Path(destPath).symlink_to(Path(srcPath).resolve())
+                if not Path(destPath).exists():
+                    Path(destPath).symlink_to(Path(srcPath).resolve())
 
                 foundPair['products'].append(destPath)
 

@@ -20,7 +20,6 @@ class SetupWorkDirs(luigi.Task):
     containerPath = luigi.Parameter()
     templateFile = luigi.Parameter()
     outputSRS = luigi.Parameter()
-    cleanupBasket = luigi.BoolParameter()
 
     def resolveExtraBinds(self, extraBinds: List[str], potentialSymlink: str):
         if Path(potentialSymlink).is_symlink():
@@ -73,6 +72,7 @@ class SetupWorkDirs(luigi.Task):
                 jobTemplate = Template(templateFile.read())
 
             params = {
+                'jobWorkingDir': baseWorkDir,
                 'input': str(Path(basket['basketPath']).parent),
                 'state': stateDir,
                 'static': self.staticLocation,
@@ -80,8 +80,7 @@ class SetupWorkDirs(luigi.Task):
                 'output': self.outputLocation,
                 'containerPath': self.containerPath,
                 'inputFolder': pairName,
-                'outputSRS': self.outputSRS,
-                'finalJobTarget': 'CleanupCompletedProductInputs' if self.cleanupBasket else 'ConvertToTif'
+                'outputSRS': self.outputSRS
             }
 
             params['extraBinds'] = self.getFilteredExtraBindings(params['input'], params['state'], params['static'], params['working'], params['output'], basket['products'])

@@ -1,4 +1,4 @@
-[ConvertToTif]
+[TransferOutputs]
 paths = {"input":"/input",
             "state":"/state",
             "static":"/static",
@@ -10,8 +10,9 @@ paths = {"input":"/input",
             "toolchainXML": "SLCCoh_Scot_CommandLine.xml"
             }
 sourceSRS = 4326
+noCopyState = True
 
-[CleanupCompletedProductInputs]
+[CleanupCompletedProducts]
 paths = {"input":"/input",
             "state":"/state",
             "static":"/static",
@@ -23,3 +24,4 @@ paths = {"input":"/input",
             "toolchainXML": "SLCCoh_Scot_CommandLine.xml"
             }
 sourceSRS = 4326
+noCopyState = True

@@ -15,18 +15,24 @@ class ConvertToTif(luigi.Task):
   sourceSRS = luigi.Parameter()
   outputSRS = luigi.Parameter()
 
-  def convert(self, input, outputFolder, outputFilePattern, sourceSRS, outputSRS, runAsShell=True):
-    outputFullPath = os.path.join(outputFolder, '{0}.tif'.format(outputFilePattern))
+  def convertToCog(self, input, outputFilePath, runAsShell=True):
+    log.info('Creating output GeoTIFF at {0}'.format(outputFilePath))
 
-    log.info('Creating output GeoTIFF at {0}'.format(outputFullPath))
+    cmd = f'gdal_translate {input} {outputFilePath} -of COG -co COMPRESS=LZW'
+    log.info('Running {0}'.format(cmd))
 
-    cmd = 'gdalwarp -s_srs EPSG:{0} -t_srs EPSG:{1} -dstnodata 0 -r near -of GTiff -tr 10.0 10.0 -co "COMPRESS=DEFLATE" {2} {3}'.format(sourceSRS, outputSRS, input, outputFullPath)
+    return subprocess.run(cmd, shell=runAsShell)
+  
+  def reproject(self, input, outputFilePath, sourceSRS, outputSRS, runAsShell=True):
+    log.info('Creating output GeoTIFF at {0}'.format(outputFilePath))
+
+    cmd = 'gdalwarp -s_srs EPSG:{0} -t_srs EPSG:{1} -dstnodata 0 -r near -of GTiff -tr 10.0 10.0 -co "COMPRESS=DEFLATE" {2} {3}'.format(sourceSRS, outputSRS, input, outputFilePath)
     log.info('Running {0}'.format(cmd))
 
     return subprocess.run(cmd, shell=runAsShell)
 
-  def getInputFile(self, outputFolderWithPattern):
-    dataFolder = '{0}.data'.format(outputFolderWithPattern)
+  def getInputFile(self, workingFolderWithPattern):
+    dataFolder = '{0}.data'.format(workingFolderWithPattern)
 
     if not (os.path.isdir(dataFolder)):
       raise Exception('Expected output folder {0} does not exist'.format(dataFolder))
@@ -52,14 +58,27 @@ class ConvertToTif(luigi.Task):
     with self.input().open('r') as processOutput:
         processSLCPairOutput = json.load(processOutput)
 
-    proc = self.convert(self.getInputFile(processSLCPairOutput['outputFolderPathWithPattern']), processSLCPairOutput['outputFolderPath'], processSLCPairOutput['outputFilePattern'], self.sourceSRS, self.outputSRS)
+    reprojectedOutputFilename = f'{processSLCPairOutput['outputFilePattern']}_tmp1.tif'
+    reprojectedOutputFilePath = os.path.join(processSLCPairOutput['workingFolder'], reprojectedOutputFilename)
+    proc = self.reproject(self.getInputFile(processSLCPairOutput['workingFolderWithPattern']), reprojectedOutputFilePath, self.sourceSRS, self.outputSRS)
+
+    cogOutputFilename = f'{processSLCPairOutput['outputFilePattern']}.tif'
+    cogOutputFilePath = os.path.join(processSLCPairOutput['workingFolder'], cogOutputFilename)
+    proc = self.convertToCog(reprojectedOutputFilePath, cogOutputFilePath)
 
     if proc.returncode != 0:
         raise Exception("Return code from gdalwarp process not 0, code was: {0}".format(
             proc.returncode))
 
     with self.output().open('w') as output:
-      output.write(json.dumps(processSLCPairOutput))
+      output.write(json.dumps({
+        'inputFolder': processSLCPairOutput['inputFolder'],
+        'outputFolder': processSLCPairOutput['outputFolder'],
+        'workingFolder': processSLCPairOutput['workingFolder'],
+        'outputFilePath': cogOutputFilePath,
+        'outputFilename': cogOutputFilename,
+        'outputFilePattern': processSLCPairOutput['outputFilePattern']
+      }, indent=4))
   
   def output(self):
     return getLocalStateTarget(self.paths['state'], 'ConvertToTif.json')
