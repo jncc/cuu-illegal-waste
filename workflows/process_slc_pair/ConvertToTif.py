@@ -15,7 +15,15 @@ class ConvertToTif(luigi.Task):
   sourceSRS = luigi.Parameter()
   outputSRS = luigi.Parameter()
 
-  def convert(self, input, outputFilePath, sourceSRS, outputSRS, runAsShell=True):
+  def convertToCog(self, input, outputFilePath, runAsShell=True):
+    log.info('Creating output GeoTIFF at {0}'.format(outputFilePath))
+
+    cmd = f'gdal_translate {input} {outputFilePath} -of COG -co COMPRESS=LZW'
+    log.info('Running {0}'.format(cmd))
+
+    return subprocess.run(cmd, shell=runAsShell)
+  
+  def reproject(self, input, outputFilePath, sourceSRS, outputSRS, runAsShell=True):
     log.info('Creating output GeoTIFF at {0}'.format(outputFilePath))
 
     cmd = 'gdalwarp -s_srs EPSG:{0} -t_srs EPSG:{1} -dstnodata 0 -r near -of GTiff -tr 10.0 10.0 -co "COMPRESS=DEFLATE" {2} {3}'.format(sourceSRS, outputSRS, input, outputFilePath)
@@ -50,9 +58,13 @@ class ConvertToTif(luigi.Task):
     with self.input().open('r') as processOutput:
         processSLCPairOutput = json.load(processOutput)
 
-    outputFilename = '{0}.tif'.format(processSLCPairOutput['outputFilePattern'])
-    outputFilePath = os.path.join(processSLCPairOutput['workingFolder'], outputFilename)
-    proc = self.convert(self.getInputFile(processSLCPairOutput['workingFolderWithPattern']), outputFilePath, self.sourceSRS, self.outputSRS)
+    reprojectedOutputFilename = f'{processSLCPairOutput['outputFilePattern']}_tmp1.tif'
+    reprojectedOutputFilePath = os.path.join(processSLCPairOutput['workingFolder'], reprojectedOutputFilename)
+    proc = self.reproject(self.getInputFile(processSLCPairOutput['workingFolderWithPattern']), reprojectedOutputFilePath, self.sourceSRS, self.outputSRS)
+
+    cogOutputFilename = f'{processSLCPairOutput['outputFilePattern']}.tif'
+    cogOutputFilePath = os.path.join(processSLCPairOutput['workingFolder'], cogOutputFilename)
+    proc = self.convertToCog(reprojectedOutputFilePath, cogOutputFilePath)
 
     if proc.returncode != 0:
         raise Exception("Return code from gdalwarp process not 0, code was: {0}".format(
@@ -63,8 +75,8 @@ class ConvertToTif(luigi.Task):
         'inputFolder': processSLCPairOutput['inputFolder'],
         'outputFolder': processSLCPairOutput['outputFolder'],
         'workingFolder': processSLCPairOutput['workingFolder'],
-        'outputFilePath': outputFilePath,
-        'outputFilename': outputFilename,
+        'outputFilePath': cogOutputFilePath,
+        'outputFilename': cogOutputFilename,
         'outputFilePattern': processSLCPairOutput['outputFilePattern']
       }, indent=4))
   
